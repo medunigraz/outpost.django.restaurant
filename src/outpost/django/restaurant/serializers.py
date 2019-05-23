@@ -9,16 +9,13 @@ logger = logging.getLogger(__name__)
 
 
 class DietSerializer(FlexFieldsModelSerializer):
-
     class Meta:
         model = models.Diet
-        exclude = (
-            'foreign',
-        )
+        exclude = ("foreign",)
 
 
 class RestaurantSerializer(FlexFieldsModelSerializer):
-    '''
+    """
     ## Expansions
 
     To activate relation expansion add the desired fields as a comma separated
@@ -30,29 +27,23 @@ class RestaurantSerializer(FlexFieldsModelSerializer):
 
      * `meals`
 
-    '''
+    """
+
     meals = PrimaryKeyRelatedField(many=True, read_only=True)
     expandable_fields = {
-        'meals': (
-            'outpost.django.restaurant.serializers.MealSerializer',
-            {
-                'source': 'meals',
-                'many': True,
-            }
-        ),
+        "meals": (
+            "outpost.django.restaurant.serializers.MealSerializer",
+            {"source": "meals", "many": True},
+        )
     }
 
     class Meta:
         model = models.Restaurant
-        exclude = (
-            'foreign',
-            'enabled',
-            'polymorphic_ctype',
-        )
+        exclude = ("foreign", "enabled", "polymorphic_ctype")
 
 
 class MealSerializer(FlexFieldsModelSerializer):
-    '''
+    """
     ## Expansions
 
     To activate relation expansion add the desired fields as a comma separated
@@ -64,24 +55,13 @@ class MealSerializer(FlexFieldsModelSerializer):
 
      * `diet`
 
-    '''
+    """
+
     expandable_fields = {
-        'diet': (
-            DietSerializer,
-            {
-                'source': 'diet',
-            }
-        ),
-        'restaurant': (
-            RestaurantSerializer,
-            {
-                'source': 'restaurant',
-            }
-        ),
+        "diet": (DietSerializer, {"source": "diet"}),
+        "restaurant": (RestaurantSerializer, {"source": "restaurant"}),
     }
 
     class Meta:
         model = models.Meal
-        exclude = (
-            'foreign',
-        )
+        exclude = ("foreign",)
