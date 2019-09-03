@@ -9,7 +9,6 @@ from hashlib import sha256
 
 import requests
 from celery.task import PeriodicTask
-from django.conf import settings
 from django.contrib.gis.geos import Point
 from django.template import Context, Template
 from django.utils import timezone
@@ -17,6 +16,7 @@ from lxml import etree
 from requests.exceptions import RequestException
 
 from . import models
+from .conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -33,12 +33,10 @@ class RestaurantSyncTask(PeriodicTask):
 
     def json(self):
         today = timezone.localdate()
-        url = settings.OUTPOST.get("restaurants")
-        if not url:
-            logger.debug("No URL for restaurant sync defined, skipping.")
-            return
         try:
-            req = requests.get(url, headers={"Accept": "application/json"})
+            req = requests.get(
+                settings.RESTAURANT_API_URL, headers={"Accept": "application/json"}
+            )
             req.raise_for_status()
         except RequestException as e:
             logger.warn(f"Could not fetch restaurant data: {e}")
