@@ -97,7 +97,7 @@ class XSLTExtractor(BaseExtractor):
 
 class XMLRestaurant(Restaurant):
     source_template = models.TextField()
-    extractor = models.ForeignKey("BaseExtractor")
+    extractor = models.ForeignKey("BaseExtractor", on_delete=models.CASCADE)
 
     @property
     def source(self):
@@ -126,11 +126,13 @@ class Meal(models.Model):
     """
 
     foreign = models.CharField(max_length=256)
-    restaurant = models.ForeignKey("Restaurant", related_name="meals")
+    restaurant = models.ForeignKey(
+        "Restaurant", related_name="meals", on_delete=models.CASCADE
+    )
     available = models.DateField()
     description = models.TextField()
     price = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
-    diet = models.ForeignKey("Diet", blank=True, null=True)
+    diet = models.ForeignKey("Diet", blank=True, null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.description
