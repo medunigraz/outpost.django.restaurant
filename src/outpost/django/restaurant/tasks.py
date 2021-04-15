@@ -8,10 +8,11 @@ from functools import reduce
 from hashlib import sha256
 
 import requests
-from celery.task import PeriodicTask
+from celery import shared_task
 from django.contrib.gis.geos import Point
 from django.template import Context, Template
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from lxml import etree
 from requests.exceptions import RequestException
 
@@ -21,17 +22,18 @@ from .conf import settings
 logger = logging.getLogger(__name__)
 
 
-class RestaurantSyncTask(PeriodicTask):
-    run_every = timedelta(hours=2)
+class SynchronizationTasks:
 
-    def run(self, **kwargs):
+    @shared_task(bind=True, ignore_result=True, name=f"{__name__}.Synchronization:restaurants")
+    def restaurants(task):
         today = timezone.localdate()
-        self.json()
-        self.xml()
+        SynchronizationTasks.json()
+        SynchronizationTasks.xml()
         logger.debug(f"Removing meals not available today: {today}")
         models.Meal.objects.exclude(available=today).delete()
 
-    def json(self):
+    @staticmethod
+    def json():
         today = timezone.localdate()
         try:
             req = requests.get(
@@ -109,7 +111,8 @@ class RestaurantSyncTask(PeriodicTask):
                 else:
                     logger.debug(f"Updated meal: {obj}")
 
-    def xml(self):
+    @staticmethod
+    def xml():
         today = timezone.localdate()
         for xrest in models.XMLRestaurant.objects.filter(enabled=True):
             logger.debug(f"Processing {xrest}")
