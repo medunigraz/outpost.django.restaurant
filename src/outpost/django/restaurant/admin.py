@@ -20,7 +20,7 @@ class XMLRestaurantAdmin(RestaurantChildAdmin):
 @admin.register(models.Restaurant)
 class RestaurantParentAdmin(PolymorphicParentModelAdmin):
     base_model = models.Restaurant
-    child_models = (models.XMLRestaurant,)
+    child_models = (models.Restaurant, models.XMLRestaurant)
     list_filter = (PolymorphicChildModelFilter,)
 
 
