@@ -8,6 +8,11 @@ from polymorphic.admin import (
 from . import models
 
 
+@admin.register(models.Diet)
+class DietAdmin(admin.ModelAdmin):
+    pass
+
+
 class RestaurantChildAdmin(PolymorphicChildModelAdmin):
     base_model = models.Restaurant
 

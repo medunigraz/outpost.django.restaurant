@@ -7,6 +7,7 @@ from email.utils import parsedate_to_datetime
 from functools import reduce
 from hashlib import sha256
 
+import bs4
 import requests
 from celery import shared_task
 from django.contrib.gis.geos import Point
@@ -113,16 +114,23 @@ class SynchronizationTasks:
 
     @staticmethod
     def xml():
+        import pudb; pu.db
         today = timezone.localdate()
         for xrest in models.XMLRestaurant.objects.filter(enabled=True):
             logger.debug(f"Processing {xrest}")
             try:
-                req = requests.get(xrest.source, headers={"Accept": "text/xml"})
-                req.raise_for_status()
+                with requests.get(xrest.source, headers=xrest.headers) as resp:
+                    resp.raise_for_status()
+                if not xrest.raw:
+                    bs = bs4.BeautifulSoup(resp.text, "lxml")
+                    for s in bs.find_all("script"):
+                        s.decompose()
+                    doc = etree.XML(bs.prettify())
+                else:
+                    doc = etree.XML(resp.text)
             except RequestException as e:
                 logger.warn(f"Could not fetch restaurant data: {e}")
                 return
-            doc = etree.XML(req.text)
             context = Context({"restaurant": xrest})
             xslt = Template(xrest.extractor.xslt).render(context)
             transformer = etree.XSLT(etree.XML(xslt))

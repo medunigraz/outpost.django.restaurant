@@ -2,6 +2,7 @@ import logging
 
 from django.conf import settings
 from django.contrib.gis.db import models
+from django.contrib.postgres.fields import HStoreField
 from django.template import Context, Template
 from polymorphic.models import PolymorphicModel
 
@@ -98,6 +99,8 @@ class XSLTExtractor(BaseExtractor):
 class XMLRestaurant(Restaurant):
     source_template = models.TextField()
     extractor = models.ForeignKey("BaseExtractor", on_delete=models.CASCADE)
+    raw = models.BooleanField(default=True)
+    headers = HStoreField(blank=True)
 
     @property
     def source(self):
