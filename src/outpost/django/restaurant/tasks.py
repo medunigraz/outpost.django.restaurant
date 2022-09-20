@@ -1,5 +1,6 @@
 import json
 import logging
+import unicodedata
 from collections import defaultdict
 from datetime import datetime, timedelta
 from decimal import Decimal, InvalidOperation
@@ -114,17 +115,17 @@ class SynchronizationTasks:
 
     @staticmethod
     def xml():
-        import pudb; pu.db
         today = timezone.localdate()
         for xrest in models.XMLRestaurant.objects.filter(enabled=True):
             logger.debug(f"Processing {xrest}")
             try:
                 with requests.get(xrest.source, headers=xrest.headers) as resp:
                     resp.raise_for_status()
-                if not xrest.raw:
+                if xrest.normalize:
                     bs = bs4.BeautifulSoup(resp.text, "lxml")
-                    for s in bs.find_all("script"):
-                        s.decompose()
+                    for selector in xrest.decompose:
+                        for element in bs.select(selector):
+                            element.decompose()
                     doc = etree.XML(bs.prettify())
                 else:
                     doc = etree.XML(resp.text)
@@ -133,9 +134,9 @@ class SynchronizationTasks:
                 return
             context = Context({"restaurant": xrest})
             xslt = Template(xrest.extractor.xslt).render(context)
-            transformer = etree.XSLT(etree.XML(xslt))
+            transformer = etree.XSLT(etree.XML(xslt.encode("utf-8")))
             data = transformer(doc)
-            for meal in json.loads(str(data)):
+            for meal in json.loads(unicodedata.normalize("NFKD", str(data))):
                 values = defaultdict(lambda: None)
                 values.update(meal)
                 if "available" in meal:
