@@ -2,8 +2,14 @@ import logging
 
 from django.conf import settings
 from django.contrib.gis.db import models
-from django.contrib.postgres.fields import ArrayField, HStoreField
-from django.template import Context, Template
+from django.contrib.postgres.fields import (
+    ArrayField,
+    HStoreField,
+)
+from django.template import (
+    Context,
+    Template,
+)
 from polymorphic.models import PolymorphicModel
 
 logger = logging.getLogger(__name__)
@@ -100,10 +106,7 @@ class XMLRestaurant(Restaurant):
     source_template = models.TextField()
     extractor = models.ForeignKey("BaseExtractor", on_delete=models.CASCADE)
     normalize = models.BooleanField(default=False)
-    decompose = ArrayField(
-        models.CharField(max_length=256),
-        blank=True
-    )
+    decompose = ArrayField(models.CharField(max_length=256), blank=True)
     headers = HStoreField(blank=True)
 
     @property

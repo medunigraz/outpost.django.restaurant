@@ -1,9 +1,8 @@
+from outpost.django.base.decorators import docstring_format
 from rest_flex_fields.views import FlexFieldsMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework_gis.filters import DistanceToPointFilter
-
-from outpost.django.base.decorators import docstring_format
 
 # from rest_framework_extensions.mixins import (
 #     CacheResponseAndETAGMixin,
@@ -11,7 +10,10 @@ from outpost.django.base.decorators import docstring_format
 # from rest_framework_extensions.cache.mixins import (
 #     CacheResponseMixin,
 # )
-from . import models, serializers
+from . import (
+    models,
+    serializers,
+)
 
 
 @docstring_format(

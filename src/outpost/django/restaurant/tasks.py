@@ -2,8 +2,14 @@ import json
 import logging
 import unicodedata
 from collections import defaultdict
-from datetime import datetime, timedelta
-from decimal import Decimal, InvalidOperation
+from datetime import (
+    datetime,
+    timedelta,
+)
+from decimal import (
+    Decimal,
+    InvalidOperation,
+)
 from email.utils import parsedate_to_datetime
 from functools import reduce
 from hashlib import sha256
@@ -12,7 +18,10 @@ import bs4
 import requests
 from celery import shared_task
 from django.contrib.gis.geos import Point
-from django.template import Context, Template
+from django.template import (
+    Context,
+    Template,
+)
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from lxml import etree
@@ -25,8 +34,9 @@ logger = logging.getLogger(__name__)
 
 
 class SynchronizationTasks:
-
-    @shared_task(bind=True, ignore_result=True, name=f"{__name__}.Synchronization:restaurants")
+    @shared_task(
+        bind=True, ignore_result=True, name=f"{__name__}.Synchronization:restaurants"
+    )
     def restaurants(task):
         today = timezone.localdate()
         SynchronizationTasks.json()
