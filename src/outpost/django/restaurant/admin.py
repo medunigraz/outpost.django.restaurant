@@ -13,8 +13,14 @@ class DietAdmin(admin.ModelAdmin):
     pass
 
 
+class MealInline(admin.TabularInline):
+    model = models.Meal
+    exclude = ("foreign",)
+
+
 class RestaurantChildAdmin(PolymorphicChildModelAdmin):
     base_model = models.Restaurant
+    inlines = (MealInline,)
 
 
 @admin.register(models.XMLRestaurant)

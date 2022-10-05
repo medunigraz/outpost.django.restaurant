@@ -42,7 +42,7 @@ class SynchronizationTasks:
         SynchronizationTasks.json()
         SynchronizationTasks.xml()
         logger.debug(f"Removing meals not available today: {today}")
-        models.Meal.objects.exclude(available=today).delete()
+        models.Meal.objects.filter(available__lt=today).delete()
 
     @staticmethod
     def json():

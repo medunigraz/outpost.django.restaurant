@@ -1,7 +1,12 @@
 import logging
 
+from django.utils import timezone
 from rest_flex_fields import FlexFieldsModelSerializer
-from rest_framework.serializers import PrimaryKeyRelatedField
+from rest_framework.serializers import (
+    ListSerializer,
+    ManyRelatedField,
+    PrimaryKeyRelatedField,
+)
 
 from . import models
 
@@ -12,6 +17,19 @@ class DietSerializer(FlexFieldsModelSerializer):
     class Meta:
         model = models.Diet
         exclude = ("foreign",)
+
+
+class TodayMealsListSerializer(ListSerializer):
+    def to_representation(self, data):
+        today = timezone.localdate()
+        return super().to_representation(data.filter(available=today))
+
+
+class TodayMealsField(ManyRelatedField):
+    def get_attribute(self, instance):
+        today = timezone.localdate()
+        queryset = super().get_attribute(instance)
+        return queryset.filter(available=today)
 
 
 class RestaurantSerializer(FlexFieldsModelSerializer):
@@ -29,7 +47,9 @@ class RestaurantSerializer(FlexFieldsModelSerializer):
 
     """
 
-    meals = PrimaryKeyRelatedField(many=True, read_only=True)
+    meals = TodayMealsField(
+        child_relation=PrimaryKeyRelatedField(read_only=True), read_only=True
+    )
     expandable_fields = {
         "meals": (
             "outpost.django.restaurant.serializers.MealSerializer",
@@ -65,3 +85,4 @@ class MealSerializer(FlexFieldsModelSerializer):
     class Meta:
         model = models.Meal
         exclude = ("foreign",)
+        list_serializer_class = TodayMealsListSerializer
