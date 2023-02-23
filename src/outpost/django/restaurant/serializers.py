@@ -22,7 +22,7 @@ class DietSerializer(FlexFieldsModelSerializer):
 class TodayMealsListSerializer(ListSerializer):
     def to_representation(self, data):
         today = timezone.localdate()
-        return super().to_representation(data.filter(available=today))
+        return super().to_representation([m for m in data if m.available == today])
 
 
 class TodayMealsField(ManyRelatedField):
