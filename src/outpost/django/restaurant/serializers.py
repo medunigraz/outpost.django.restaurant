@@ -1,5 +1,6 @@
 import logging
 
+from django.db.models.manager import BaseManager
 from django.utils import timezone
 from rest_flex_fields import FlexFieldsModelSerializer
 from rest_framework.serializers import (
@@ -22,7 +23,10 @@ class DietSerializer(FlexFieldsModelSerializer):
 class TodayMealsListSerializer(ListSerializer):
     def to_representation(self, data):
         today = timezone.localdate()
-        return super().to_representation([m for m in data if m.available == today])
+        if isinstance(data, BaseManager):
+            return super().to_representation(data.filter(available=today))
+        else:
+            return super().to_representation([m for m in data if m.available == today])
 
 
 class TodayMealsField(ManyRelatedField):
