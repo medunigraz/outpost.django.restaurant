@@ -32,7 +32,8 @@ class XMLRestaurantAdmin(RestaurantChildAdmin):
 class RestaurantParentAdmin(PolymorphicParentModelAdmin):
     base_model = models.Restaurant
     child_models = (models.Restaurant, models.XMLRestaurant)
-    list_filter = (PolymorphicChildModelFilter,)
+    list_filter = (PolymorphicChildModelFilter, "enabled")
+    list_display = ("name", "enabled")
 
 
 class BaseExtractorChildAdmin(PolymorphicChildModelAdmin):
