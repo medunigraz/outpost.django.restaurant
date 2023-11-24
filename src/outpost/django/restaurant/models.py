@@ -81,9 +81,7 @@ class Restaurant(PolymorphicModel):
     enabled = models.BooleanField(default=False)
 
     class Meta:
-        ordering = (
-            "name",
-        )
+        ordering = ("name",)
 
     def __str__(self):
         return self.name
