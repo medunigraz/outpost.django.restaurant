@@ -1,0 +1,38 @@
+{% extends "restaurant/base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="row mb-3">
+  <div class="col">
+    <h1>
+      {{ restaurant }}
+    </h1>
+  </div>
+</div>
+<div class="row mb-3">
+  <div class="col">
+    <form action="." method="post">
+      {% csrf_token %}
+      <div class="card">
+        <div class="card-header">
+          {% trans "Confirm deletion" %}
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">{{ object }}</h5>
+          <p class="card-text">
+          {% blocktrans %}
+          Please confirm the deletion of this entry.
+          {% endblocktrans %}
+          </p>
+          <button type="submit" class="btn btn-warning">
+            {% trans "Delete" %}
+          </button>
+          <a href="{% url "restaurant:restaurant" secret=restaurant.secret %}" class="btn btn-outline-secondary">
+            {% trans "Cancel" %}
+          </a>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

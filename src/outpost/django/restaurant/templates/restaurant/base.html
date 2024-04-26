@@ -1,0 +1,32 @@
+{% extends "outpost/body.html" %}
+
+{% load static %}
+{% load i18n %}
+
+{% block style %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'pikaday/scss/pikaday.scss' %}" type="text/x-scss" charset="utf-8">
+{% endblock %}
+
+{% block script %}
+{{ block.super }}
+<script src="{% static 'moment/moment.js' %}"></script>
+<script src="{% static 'pikaday/pikaday.js' %}"></script>
+{% endblock %}
+
+{% block body %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 justify-content-between">
+  <div class="container">
+    <a class="navbar-brand" href="{% url "base:index" %}">
+      <img src="{% static 'logo.svg' %}" class="hidden-xs navbar-left logo">
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  </div>
+</nav>
+
+<div class="container">
+  {% block content %}{% endblock %}
+</div>
+{% endblock %}

@@ -1,0 +1,131 @@
+{% extends "restaurant/base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="row mb-3">
+  <div class="col">
+    <h1>
+      {{ object }}
+    </h1>
+  </div>
+</div>
+<div class="row mb-3">
+  <div class="col-lg-6 my-lg-0 my-md-1 my-sm-1">
+    <a class="btn btn-primary btn-block" href="{% url "restaurant:meal-create" secret=object.secret %}">
+      <i class="fa fa-cutlery" aria-hidden="true"></i>
+      {% trans "New meal" %}
+    </a>
+  </div>
+  <div class="col-lg-6 my-lg-0 my-md-1 my-sm-1">
+    <a class="btn btn-primary btn-block" href="{% url "restaurant:special-create" secret=object.secret %}">
+      <i class="fa fa-calendar-plus-o" aria-hidden="true"></i>
+      {% trans "New special" %}
+    </a>
+  </div>
+</div>
+<div class="row mb-3">
+  {% if object.meals.exists %}
+  {% regroup object.meals.all by available as days %}
+  <div class="col-lg-6">
+    {% for day in days %}
+    <div class="card mb-2">
+      <div class="card-header">
+        {% blocktrans with day=day.grouper %}
+        Meals on {{ day }}
+        {% endblocktrans %}
+      </div>
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th scope="col">
+              {% trans "Available" %}
+            </th>
+            <th scope="col">
+              {% trans "Description" %}
+            </th>
+            <th scope="col">
+              {% trans "Price" %}
+            </th>
+            <th scope="col">
+              {% trans "Actions" %}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for meal in day.list %}
+          <tr>
+            <td>
+              {{ meal.available }}
+            </td>
+            <td>
+              {{ meal.description|truncatechars:7 }}
+            </td>
+            <td>
+              {{ meal.price }} €
+            </td>
+            <td role="group" aria-label="Actions for {{ meal }}">
+              <div class="btn-group btn-block">
+                <a type="button" class="btn btn-secondary" href="{% url "restaurant:meal-update" secret=object.secret pk=meal.pk %}">
+                  <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                </a>
+                <a type="button" class="btn btn-outline-warning" href="{% url "restaurant:meal-delete" secret=object.secret pk=meal.pk %}">
+                  <i class="fa fa-trash-o" aria-hidden="true"></i>
+                </a>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% if object.specials.exists %}
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header">
+        {% trans "Specials" %}
+      </div>
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th scope="col">
+              {% trans "From" %}
+            </th>
+            <th scope="col">
+              {% trans "To" %}
+            </th>
+            <th scope="col">
+              {% trans "Actions" %}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for special in object.specials.all %}
+          <tr>
+            <td>
+              {{ special.start }}
+            </td>
+            <td>
+              {{ special.end }}
+            </td>
+            <td role="group" aria-label="Actions for {{ special }}">
+              <div class="btn-group btn-block">
+                <a type="button" class="btn btn-secondary" href="{% url "restaurant:special-update" secret=object.secret pk=special.pk %}">
+                  <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                </a>
+                <a type="button" class="btn btn-outline-warning" href="{% url "restaurant:special-delete" secret=object.secret pk=special.pk %}">
+                  <i class="fa fa-trash-o" aria-hidden="true"></i>
+                </a>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

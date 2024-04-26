@@ -2,10 +2,6 @@ import json
 import logging
 import unicodedata
 from collections import defaultdict
-from datetime import (
-    datetime,
-    timedelta,
-)
 from decimal import (
     Decimal,
     InvalidOperation,
@@ -23,12 +19,12 @@ from django.template import (
     Template,
 )
 from django.utils import timezone
-from django.utils.translation import gettext_lazy as _
 from lxml import etree
 from requests.exceptions import RequestException
 
 from . import models
 from .conf import settings
+from .xslt import extensions
 
 logger = logging.getLogger(__name__)
 
@@ -38,11 +34,12 @@ class SynchronizationTasks:
         bind=True, ignore_result=True, name=f"{__name__}.Synchronization:restaurants"
     )
     def restaurants(task):
-        today = timezone.localdate()
+        today = timezone.now().date()
         SynchronizationTasks.json()
         SynchronizationTasks.xml()
-        logger.debug(f"Removing meals not available today: {today}")
+        logger.debug(f"Removing meals and specials not available after today: {today}")
         models.Meal.objects.filter(available__lt=today).delete()
+        models.Special.objects.filter(end__lt=today).delete()
 
     @staticmethod
     def json():
@@ -141,23 +138,29 @@ class SynchronizationTasks:
                     doc = etree.XML(resp.text)
             except RequestException as e:
                 logger.warn(f"Could not fetch restaurant data: {e}")
-                return
+                continue
             context = Context({"restaurant": xrest})
             xslt = Template(xrest.extractor.xslt).render(context)
-            transformer = etree.XSLT(etree.XML(xslt.encode("utf-8")))
+            transformer = etree.XSLT(
+                etree.XML(xslt.encode("utf-8")), extensions=extensions
+            )
             data = transformer(doc)
             for meal in json.loads(unicodedata.normalize("NFKD", str(data))):
                 values = defaultdict(lambda: None)
                 values.update(meal)
                 if "available" in meal:
-                    values["available"] = datetime.strptime(
+                    available = timezone.datetime.strptime(
                         meal.get("available"), xrest.extractor.dateformat
                     ).date()
-                    if values["available"] != today:
+                    if available < timezone.now().date():
+                        # Skip meals no longer relevant
                         continue
+                    values["available"] = available
                 else:
                     values["available"] = today
                 if "foreign" not in meal:
+                    # Without a foreign key from the import, we would run the
+                    # risk of flooding our database with duplicates
                     logger.info(f"No foreign key data found: {meal}")
                     continue
                 hashkey = meal.get("foreign").encode("utf-8")

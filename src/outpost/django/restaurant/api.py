@@ -64,7 +64,24 @@ class MealViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     {serializer}
     """
 
-    queryset = models.Meal.objects.all()
+    queryset = models.Meal.active.all()
     serializer_class = serializers.MealSerializer
     permission_classes = (IsAuthenticated,)
     permit_list_expands = ("restaurant", "diet")
+
+
+@docstring_format(
+    model=models.Special.__doc__, serializer=serializers.SpecialSerializer.__doc__
+)
+class SpecialViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
+    """
+    List specials.
+
+    {model}
+    {serializer}
+    """
+
+    queryset = models.Special.active.all()
+    serializer_class = serializers.SpecialSerializer
+    permission_classes = (IsAuthenticated,)
+    permit_list_expands = ("restaurant",)

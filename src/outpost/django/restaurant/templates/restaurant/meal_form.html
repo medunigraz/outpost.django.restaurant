@@ -1,0 +1,33 @@
+{% extends "restaurant/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block script %}
+{{ block.super }}
+<script>
+var minDate = new Date();
+minDate.setDate(minDate.getDate() + 1);
+$('input.dateinput').each(function(index, element) {
+  new Pikaday({
+    field: element,
+    minDate: minDate,
+    showWeekNumber: true,
+    format: 'DD.MM.YYYY',
+  });
+});
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+  <div class="col">
+    <h1>
+      {{ restaurant }}
+    </h1>
+  </div>
+</div>
+<div class="row mb-3">
+  <div class="col">
+    {% crispy form %}
+  </div>
+</div>
+{% endblock %}

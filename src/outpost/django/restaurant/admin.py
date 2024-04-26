@@ -18,6 +18,10 @@ class MealInline(admin.TabularInline):
     exclude = ("foreign",)
 
 
+class SpecialInline(admin.TabularInline):
+    model = models.Special
+
+
 class RestaurantChildAdmin(PolymorphicChildModelAdmin):
     base_model = models.Restaurant
     inlines = (MealInline,)
@@ -28,10 +32,17 @@ class XMLRestaurantAdmin(RestaurantChildAdmin):
     base_model = models.XMLRestaurant
 
 
+@admin.register(models.ManualRestaurant)
+class ManualRestaurantAdmin(RestaurantChildAdmin):
+    base_model = models.ManualRestaurant
+    inlines = (MealInline, SpecialInline)
+    readonly_fields = ("secret",)
+
+
 @admin.register(models.Restaurant)
 class RestaurantParentAdmin(PolymorphicParentModelAdmin):
     base_model = models.Restaurant
-    child_models = (models.Restaurant, models.XMLRestaurant)
+    child_models = (models.Restaurant, models.XMLRestaurant, models.ManualRestaurant)
     list_filter = (PolymorphicChildModelFilter, "enabled")
     list_display = ("name", "enabled")
 

@@ -6,7 +6,6 @@ from rest_flex_fields import FlexFieldsModelSerializer
 from rest_framework.serializers import (
     ListSerializer,
     ManyRelatedField,
-    PrimaryKeyRelatedField,
 )
 
 from . import models
@@ -24,9 +23,9 @@ class TodayMealsListSerializer(ListSerializer):
     def to_representation(self, data):
         today = timezone.localdate()
         if isinstance(data, BaseManager):
-            return super().to_representation(data.filter(available=today))
+            return super().to_representation(data.filter(available__gte=today))
         else:
-            return super().to_representation([m for m in data if m.available == today])
+            return super().to_representation([m for m in data if m.available >= today])
 
 
 class TodayMealsField(ManyRelatedField):
@@ -51,15 +50,18 @@ class RestaurantSerializer(FlexFieldsModelSerializer):
 
     """
 
-    meals = TodayMealsField(
-        child_relation=PrimaryKeyRelatedField(read_only=True), read_only=True
-    )
-    expandable_fields = {
-        "meals": (
-            "outpost.django.restaurant.serializers.MealSerializer",
-            {"source": "meals", "many": True},
-        )
-    }
+    @property
+    def expandable_fields(self):
+        return {
+            "meals": (
+                f"{self.__class__.__module__}.MealSerializer",
+                {"source": "meals", "many": True},
+            ),
+            "specials": (
+                f"{self.__class__.__module__}.SpecialSerializer",
+                {"source": "specials", "many": True},
+            ),
+        }
 
     class Meta:
         model = models.Restaurant
@@ -89,4 +91,23 @@ class MealSerializer(FlexFieldsModelSerializer):
     class Meta:
         model = models.Meal
         exclude = ("foreign",)
-        list_serializer_class = TodayMealsListSerializer
+
+
+class SpecialSerializer(FlexFieldsModelSerializer):
+    """
+    ## Expansions
+
+    To activate relation expansion add the desired fields as a comma separated
+    list to the `expand` query parameter like this:
+
+        ?expand=<field>,<field>,<field>,...
+
+    The following relational fields can be expanded:
+
+     * `diet`
+
+    """
+
+    class Meta:
+        model = models.Special
+        fields = "__all__"

@@ -10,7 +10,10 @@ from django.template import (
     Context,
     Template,
 )
+from django.utils import timezone
+from outpost.django.base.utils import Uuid4Upload
 from polymorphic.models import PolymorphicModel
+from shortuuid.django_fields import ShortUUIDField
 
 logger = logging.getLogger(__name__)
 
@@ -118,6 +121,15 @@ class XMLRestaurant(Restaurant):
         return Template(self.source_template).render(context)
 
 
+class ManualRestaurant(Restaurant):
+    secret = ShortUUIDField(length=16, max_length=16)
+
+
+class MealManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(available__gte=timezone.now())
+
+
 class Meal(models.Model):
     """
     ## Fields
@@ -138,7 +150,7 @@ class Meal(models.Model):
     Foreign key to [Diet](../diet) this meal is conformant with.
     """
 
-    foreign = models.CharField(max_length=256)
+    foreign = models.CharField(max_length=256, blank=True, null=True)
     restaurant = models.ForeignKey(
         "Restaurant", related_name="meals", on_delete=models.CASCADE
     )
@@ -147,5 +159,29 @@ class Meal(models.Model):
     price = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
     diet = models.ForeignKey("Diet", blank=True, null=True, on_delete=models.SET_NULL)
 
+    active = MealManager()
+    objects = models.Manager()
+
     def __str__(self):
         return self.description
+
+
+class SpecialManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(end__gte=timezone.now())
+
+
+class Special(models.Model):
+    restaurant = models.ForeignKey(
+        Restaurant, on_delete=models.CASCADE, related_name="specials"
+    )
+    start = models.DateField()
+    end = models.DateField()
+    document = models.FileField(upload_to=Uuid4Upload, null=True, blank=True)
+    description = models.TextField()
+
+    active = SpecialManager()
+    objects = models.Manager()
+
+    def __str__(self):
+        return f"{self.restaurant}: {self.start} - {self.end}"
