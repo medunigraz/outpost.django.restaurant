@@ -1,0 +1,90 @@
+# outpost.django.restaurant translations
+# Copyright (C) 2024, Michael Fladischer <michael.fladischer@medunigraz.at>
+# This file is distributed under the same license as the outpost.django.restaurant package.
+# Michael Fladischer <michael.fladischer@medunigraz.at>, 2024
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-04-30 13:35+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: src/outpost/django/restaurant/templates/restaurant/confirm_delete.html:18
+msgid "Confirm deletion"
+msgstr "Löschen bestätigen"
+
+#: src/outpost/django/restaurant/templates/restaurant/confirm_delete.html:23
+msgid ""
+"\n"
+"          Please confirm the deletion of this entry.\n"
+"          "
+msgstr "\nBitte bestätigen Sie das Löschen dieses Eintrags."
+
+#: src/outpost/django/restaurant/templates/restaurant/confirm_delete.html:28
+msgid "Delete"
+msgstr "Löschen"
+
+#: src/outpost/django/restaurant/templates/restaurant/confirm_delete.html:31
+#: src/outpost/django/restaurant/views.py:105
+#: src/outpost/django/restaurant/views.py:158
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: src/outpost/django/restaurant/templates/restaurant/manualrestaurant_detail.html:16
+msgid "New meal"
+msgstr "Neues Menü"
+
+#: src/outpost/django/restaurant/templates/restaurant/manualrestaurant_detail.html:22
+msgid "New special"
+msgstr "Neues Special"
+
+#: src/outpost/django/restaurant/templates/restaurant/manualrestaurant_detail.html:33
+#, python-format
+msgid ""
+"\n"
+"        Meals on %(day)s\n"
+"        "
+msgstr "\nMenüs am %(day)s"
+
+#: src/outpost/django/restaurant/templates/restaurant/manualrestaurant_detail.html:41
+msgid "Available"
+msgstr "Verfügbar"
+
+#: src/outpost/django/restaurant/templates/restaurant/manualrestaurant_detail.html:44
+msgid "Description"
+msgstr "Bezeichnung"
+
+#: src/outpost/django/restaurant/templates/restaurant/manualrestaurant_detail.html:47
+msgid "Price"
+msgstr "Preis"
+
+#: src/outpost/django/restaurant/templates/restaurant/manualrestaurant_detail.html:50
+#: src/outpost/django/restaurant/templates/restaurant/manualrestaurant_detail.html:100
+msgid "Actions"
+msgstr "Aktionen"
+
+#: src/outpost/django/restaurant/templates/restaurant/manualrestaurant_detail.html:88
+msgid "Specials"
+msgstr "Specials"
+
+#: src/outpost/django/restaurant/templates/restaurant/manualrestaurant_detail.html:94
+msgid "From"
+msgstr "Von"
+
+#: src/outpost/django/restaurant/templates/restaurant/manualrestaurant_detail.html:97
+msgid "To"
+msgstr "Bis"
+
+#: src/outpost/django/restaurant/views.py:96
+#: src/outpost/django/restaurant/views.py:149
+msgid "Save changes"
+msgstr "Änderungen speichern"
