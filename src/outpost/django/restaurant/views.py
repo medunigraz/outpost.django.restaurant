@@ -5,10 +5,8 @@ from crispy_forms.bootstrap import (
 )
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import (
-    HTML,
     Field,
     Layout,
-    Submit,
 )
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy as reverse
@@ -20,6 +18,10 @@ from django.views.generic import (
     DeleteView,
     DetailView,
     UpdateView,
+)
+from outpost.django.base.layout import (
+    IconButton,
+    LinkIconButton,
 )
 
 from .models import (
@@ -80,10 +82,6 @@ class MealMixin:
     )
 
     def get_layout(self):
-        url = reverse(
-            "restaurant:restaurant", kwargs={"secret": self.restaurant.secret}
-        )
-        label = _("Cancel")
         return Layout(
             PrependedText(
                 "available",
@@ -93,9 +91,19 @@ class MealMixin:
             AppendedText("price", "€"),
             Field("diet"),
             FormActions(
-                Submit("", _("Save changes"), css_class="btn-block btn-primary"),
-                HTML(
-                    f"""<a class="btn btn-block btn-secondary" href="{url}">{label}</a>"""
+                IconButton(
+                    "fa fa-paper-plane-o",
+                    _("Save changes"),
+                    css_class="btn-block btn-success",
+                ),
+                LinkIconButton(
+                    reverse(
+                        "restaurant:restaurant",
+                        kwargs={"secret": self.restaurant.secret},
+                    ),
+                    "fa fa-arrow-circle-o-left",
+                    _("Cancel"),
+                    css_class="btn btn-block btn-secondary",
                 ),
             ),
         )
@@ -124,10 +132,6 @@ class SpecialMixin:
     )
 
     def get_layout(self):
-        url = reverse(
-            "restaurant:restaurant", kwargs={"secret": self.restaurant.secret}
-        )
-        label = _("Cancel")
         return Layout(
             PrependedText(
                 "start",
@@ -140,9 +144,19 @@ class SpecialMixin:
             Field("document"),
             Field("description"),
             FormActions(
-                Submit("", _("Save changes"), css_class="btn-block btn-primary"),
-                HTML(
-                    f"""<a class="btn btn-block btn-secondary" href="{url}">{label}</a>"""
+                IconButton(
+                    "fa fa-paper-plane-o",
+                    _("Save changes"),
+                    css_class="btn-block btn-success",
+                ),
+                LinkIconButton(
+                    reverse(
+                        "restaurant:restaurant",
+                        kwargs={"secret": self.restaurant.secret},
+                    ),
+                    "fa fa-arrow-circle-o-left",
+                    _("Cancel"),
+                    css_class="btn btn-block btn-secondary",
                 ),
             ),
         )
