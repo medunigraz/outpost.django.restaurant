@@ -94,6 +94,7 @@ class MealMixin:
                 IconButton(
                     "fa fa-paper-plane-o",
                     _("Save changes"),
+                    type="submit",
                     css_class="btn-block btn-success",
                 ),
                 LinkIconButton(
@@ -147,6 +148,7 @@ class SpecialMixin:
                 IconButton(
                     "fa fa-paper-plane-o",
                     _("Save changes"),
+                    type="submit",
                     css_class="btn-block btn-success",
                 ),
                 LinkIconButton(
