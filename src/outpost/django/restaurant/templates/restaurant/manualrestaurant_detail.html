@@ -10,13 +10,13 @@
   </div>
 </div>
 <div class="row mb-3">
-  <div class="col-lg-6 my-lg-0 my-md-1 my-sm-1">
+  <div class="col-lg-6 my-1 my-lg-0">
     <a class="btn btn-success btn-block" href="{% url "restaurant:meal-create" secret=object.secret %}">
       <i class="fa fa-cutlery" aria-hidden="true"></i>
       {% trans "New meal" %}
     </a>
   </div>
-  <div class="col-lg-6 my-lg-0 my-md-1 my-sm-1">
+  <div class="col-lg-6 my-1 my-lg-0">
     <a class="btn btn-success btn-block" href="{% url "restaurant:special-create" secret=object.secret %}">
       <i class="fa fa-calendar-plus-o" aria-hidden="true"></i>
       {% trans "New special" %}
