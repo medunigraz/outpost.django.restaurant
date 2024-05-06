@@ -25,7 +25,7 @@
 </div>
 <div class="row mb-3">
   {% if object.meals.exists %}
-  {% regroup object.meals.all by available as days %}
+  {% regroup object.meals.all|dictsort:"available" by available as days %}
   <div class="col-lg-6">
     {% for day in days %}
     <div class="card mb-2">
@@ -52,7 +52,7 @@
           </tr>
         </thead>
         <tbody>
-          {% for meal in day.list %}
+          {% for meal in day.list|dictsort:"description" %}
           <tr>
             <td>
               {{ meal.available }}
@@ -102,7 +102,7 @@
           </tr>
         </thead>
         <tbody>
-          {% for special in object.specials.all %}
+          {% for special in object.specials.all|dictsort:"start" %}
           <tr>
             <td>
               {{ special.start }}
