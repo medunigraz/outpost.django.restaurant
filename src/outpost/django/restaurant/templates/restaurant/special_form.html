@@ -5,7 +5,6 @@
 {{ block.super }}
 <script>
 var minDate = new Date();
-minDate.setDate(minDate.getDate() + 1);
 $('input.dateinput').each(function(index, element) {
   new Pikaday({
     field: element,
