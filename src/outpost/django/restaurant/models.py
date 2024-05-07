@@ -1,4 +1,5 @@
 import logging
+from uuid import uuid4
 
 from django.conf import settings
 from django.contrib.gis.db import models
@@ -185,3 +186,13 @@ class Special(models.Model):
 
     def __str__(self):
         return f"{self.restaurant}: {self.start} - {self.end}"
+
+
+class Consumer(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+    name = models.CharField(max_length=128)
+    restaurants = models.ManyToManyField(Restaurant, related_name="consumers")
+    active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name

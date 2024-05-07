@@ -1,3 +1,4 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from outpost.django.base.decorators import docstring_format
 from rest_flex_fields.views import FlexFieldsMixin
 from rest_framework.permissions import IsAuthenticated
@@ -11,6 +12,7 @@ from rest_framework_gis.filters import DistanceToPointFilter
 #     CacheResponseMixin,
 # )
 from . import (
+    filters,
     models,
     serializers,
 )
@@ -48,7 +50,8 @@ class RestaurantViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     serializer_class = serializers.RestaurantSerializer
     permission_classes = (IsAuthenticated,)
     distance_filter_field = "position"
-    filter_backends = (DistanceToPointFilter,)
+    filter_backends = (DjangoFilterBackend, DistanceToPointFilter)
+    filterset_class = filters.RestaurantFilter
     bbox_filter_include_overlapping = True
     permit_list_expands = ("meals", "meals.diet")
 
