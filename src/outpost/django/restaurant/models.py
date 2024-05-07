@@ -1,5 +1,4 @@
 import logging
-from uuid import uuid4
 
 from django.conf import settings
 from django.contrib.gis.db import models
@@ -12,6 +11,7 @@ from django.template import (
     Template,
 )
 from django.utils import timezone
+from outpost.django.api.models import Consumer
 from outpost.django.base.utils import Uuid4Upload
 from polymorphic.models import PolymorphicModel
 from shortuuid.django_fields import ShortUUIDField
@@ -83,6 +83,7 @@ class Restaurant(PolymorphicModel):
         blank=True, null=True, db_index=True, srid=settings.DEFAULT_SRID
     )
     enabled = models.BooleanField(default=False)
+    consumers = models.ManyToManyField(Consumer, related_name="+")
 
     class Meta:
         ordering = ("name",)
@@ -186,13 +187,3 @@ class Special(models.Model):
 
     def __str__(self):
         return f"{self.restaurant}: {self.start} - {self.end}"
-
-
-class Consumer(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
-    name = models.CharField(max_length=128)
-    restaurants = models.ManyToManyField(Restaurant, related_name="consumers")
-    active = models.BooleanField(default=True)
-
-    def __str__(self):
-        return self.name

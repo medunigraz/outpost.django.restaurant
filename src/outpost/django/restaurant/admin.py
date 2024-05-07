@@ -94,8 +94,3 @@ class BaseExtractorParentAdmin(PolymorphicParentModelAdmin):
     base_model = models.BaseExtractor
     child_models = (models.XSLTExtractor,)
     list_filter = (PolymorphicChildModelFilter,)
-
-
-@admin.register(models.Consumer)
-class ConsumerAdmin(admin.ModelAdmin):
-    pass
