@@ -35,6 +35,56 @@ class TodayMealsField(ManyRelatedField):
         return queryset.filter(available=today)
 
 
+class MealSerializer(FlexFieldsModelSerializer):
+    """
+    ## Expansions
+
+    To activate relation expansion add the desired fields as a comma separated
+    list to the `expand` query parameter like this:
+
+        ?expand=<field>,<field>,<field>,...
+
+    The following relational fields can be expanded:
+
+     * `diet`
+
+    """
+
+    @property
+    def expandable_fields(self):
+        return {
+            "diet": (f"{self.__class__.__module__}.DietSerializer", {"source": "diet"}),
+            "restaurant": (
+                f"{self.__class__.__module__}.RestaurantSerializer",
+                {"source": "restaurant"},
+            ),
+        }
+
+    class Meta:
+        model = models.Meal
+        exclude = ("foreign",)
+
+
+class SpecialSerializer(FlexFieldsModelSerializer):
+    """
+    ## Expansions
+
+    To activate relation expansion add the desired fields as a comma separated
+    list to the `expand` query parameter like this:
+
+        ?expand=<field>,<field>,<field>,...
+
+    The following relational fields can be expanded:
+
+     * `diet`
+
+    """
+
+    class Meta:
+        model = models.Special
+        fields = "__all__"
+
+
 class RestaurantSerializer(FlexFieldsModelSerializer):
     """
     ## Expansions
@@ -65,49 +115,16 @@ class RestaurantSerializer(FlexFieldsModelSerializer):
 
     class Meta:
         model = models.Restaurant
-        exclude = ("foreign", "enabled", "polymorphic_ctype")
-
-
-class MealSerializer(FlexFieldsModelSerializer):
-    """
-    ## Expansions
-
-    To activate relation expansion add the desired fields as a comma separated
-    list to the `expand` query parameter like this:
-
-        ?expand=<field>,<field>,<field>,...
-
-    The following relational fields can be expanded:
-
-     * `diet`
-
-    """
-
-    expandable_fields = {
-        "diet": (DietSerializer, {"source": "diet"}),
-        "restaurant": (RestaurantSerializer, {"source": "restaurant"}),
-    }
-
-    class Meta:
-        model = models.Meal
-        exclude = ("foreign",)
-
-
-class SpecialSerializer(FlexFieldsModelSerializer):
-    """
-    ## Expansions
-
-    To activate relation expansion add the desired fields as a comma separated
-    list to the `expand` query parameter like this:
-
-        ?expand=<field>,<field>,<field>,...
-
-    The following relational fields can be expanded:
-
-     * `diet`
-
-    """
-
-    class Meta:
-        model = models.Special
-        fields = "__all__"
+        fields = (
+            "id",
+            "name",
+            "address",
+            "zipcode",
+            "city",
+            "phone",
+            "email",
+            "url",
+            "position",
+            "meals",
+            "specials",
+        )
