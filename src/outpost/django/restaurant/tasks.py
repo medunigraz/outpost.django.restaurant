@@ -183,6 +183,10 @@ class SynchronizationTasks:
                             logger.info(f"Diet not found: {diet_pk}")
                             values["diet"] = None
                 values["restaurant"] = xrest
+                # Strip whitespace from both ends of string values
+                for k in values.keys():
+                    if isinstance(values.get(k), str):
+                        values[k] = values.get(k).strip()
                 obj, created = models.Meal.objects.update_or_create(
                     foreign=values["foreign"], defaults=values
                 )
