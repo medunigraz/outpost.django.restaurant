@@ -72,10 +72,25 @@ class ManualRestaurantAdmin(RestaurantChildAdmin):
     qrcode.short_description = _("QR code")
 
 
+class DietMapInline(admin.TabularInline):
+    model = models.DietMap
+
+
+@admin.register(models.PluginRestaurant)
+class PluginRestaurantAdmin(RestaurantChildAdmin):
+    base_model = models.PluginRestaurant
+    inlines = (DietMapInline,)
+
+
 @admin.register(models.Restaurant)
 class RestaurantParentAdmin(PolymorphicParentModelAdmin):
     base_model = models.Restaurant
-    child_models = (models.Restaurant, models.XMLRestaurant, models.ManualRestaurant)
+    child_models = (
+        models.Restaurant,
+        models.XMLRestaurant,
+        models.ManualRestaurant,
+        models.PluginRestaurant,
+    )
     list_filter = (PolymorphicChildModelFilter, "enabled")
     list_display = ("name", "enabled")
 

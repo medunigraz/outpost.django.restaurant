@@ -5,16 +5,23 @@ from django.contrib.gis.db import models
 from django.contrib.postgres.fields import (
     ArrayField,
     HStoreField,
+    JSONField,
 )
+from django.core.exceptions import ValidationError
 from django.template import (
     Context,
     Template,
 )
 from django.utils import timezone
+from django.utils.translation import gettext as _
+from ordered_model.models import OrderedModel
 from outpost.django.api.models import Consumer
+from outpost.django.base.decorators import signal_connect
 from outpost.django.base.utils import Uuid4Upload
 from polymorphic.models import PolymorphicModel
 from shortuuid.django_fields import ShortUUIDField
+
+from .plugins import RestaurantBehaviour
 
 logger = logging.getLogger(__name__)
 
@@ -127,6 +134,43 @@ class ManualRestaurant(Restaurant):
     secret = ShortUUIDField(length=16, max_length=16)
 
 
+class PluginRestaurant(Restaurant):
+    configuration = JSONField()
+    behaviour = models.CharField(
+        max_length=256,
+        choices=[
+            (p.qualified(), p.name)
+            for p in sorted(
+                RestaurantBehaviour.manager().get_plugins(),
+                key=lambda p: p.qualified(),
+            )
+        ],
+    )
+    default_diet = models.ForeignKey(Diet, on_delete=models.CASCADE)
+
+    @property
+    def plugin(self):
+        pm = RestaurantBehaviour.manager(lambda p: p.qualified() == self.behaviour)
+        return pm
+
+    def clean(self):
+        if not all(self.plugin.hook.validate(restaurant=self)):
+            raise ValidationError(
+                {"configuration": _("Value is not suitable for selected behaviour.")}
+            )
+
+
+class DietMap(OrderedModel):
+    restaurant = models.ForeignKey(PluginRestaurant, on_delete=models.CASCADE)
+    value = models.CharField(max_length=512)
+    diet = models.ForeignKey(Diet, on_delete=models.CASCADE)
+
+    order_with_respect_to = "restaurant"
+
+    def __str__(self):
+        return str(self.value)
+
+
 class MealManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(available__gte=timezone.now())
@@ -181,7 +225,6 @@ class Special(models.Model):
     end = models.DateField()
     document = models.FileField(upload_to=Uuid4Upload, null=True, blank=True)
     description = models.TextField()
-
     active = SpecialManager()
     objects = models.Manager()
 
