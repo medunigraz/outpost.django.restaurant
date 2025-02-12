@@ -31,6 +31,13 @@ logger = logging.getLogger(__name__)
 
 class SynchronizationTasks:
     @shared_task(
+        bind=True, ignore_result=True, name=f"{__name__}.Synchronization:plugins"
+    )
+    def plugins(task):
+        for restaurant in models.PluginsRestaurant.objects.filter(enabled=True):
+            restaurant.plugin.hook.update(restaurant=restaurant)
+
+    @shared_task(
         bind=True, ignore_result=True, name=f"{__name__}.Synchronization:restaurants"
     )
     def restaurants(task):
