@@ -1,4 +1,5 @@
 import json
+import hashlib
 import logging
 from datetime import timedelta
 from decimal import Decimal
@@ -100,11 +101,12 @@ class MensenRestaurantBehaviour(RestaurantBehaviourPlugin):
             data = json.loads(jmespath.search(nested, result))
             first_day = parse(data.get("first_day"))
             for menus in data.get("menus"):
+                menu = hashlib.sha1(menus.get("name").encode("UTF-8")).hexdigest()[:10]
                 for offset, values in menus.get("menus").items():
                     day = first_day + timedelta(days=int(offset) - 1)
                     for pos, entry in enumerate(values):
-                        foreign = "{day}-{pos}".format(
-                            day=day.strftime("%Y-%m-%d"), pos=pos
+                        foreign = "{day}-{menu}-{pos}".format(
+                            day=day.strftime("%Y-%m-%d"), pos=pos, menu=menu
                         )
                         informations = entry.get("informations")
                         if informations:
