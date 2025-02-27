@@ -79,7 +79,7 @@ class DietMapInline(admin.TabularInline):
 @admin.register(models.PluginRestaurant)
 class PluginRestaurantAdmin(RestaurantChildAdmin):
     base_model = models.PluginRestaurant
-    inlines = (DietMapInline,)
+    inlines = (DietMapInline, SpecialInline)
 
 
 @admin.register(models.Restaurant)
