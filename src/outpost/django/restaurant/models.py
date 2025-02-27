@@ -90,7 +90,7 @@ class Restaurant(PolymorphicModel):
         blank=True, null=True, db_index=True, srid=settings.DEFAULT_SRID
     )
     enabled = models.BooleanField(default=False)
-    consumers = models.ManyToManyField(Consumer, related_name="+")
+    consumers = models.ManyToManyField(Consumer, related_name="+", blank=True)
 
     class Meta:
         ordering = ("name",)
