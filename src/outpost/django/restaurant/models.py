@@ -5,7 +5,6 @@ from django.contrib.gis.db import models
 from django.contrib.postgres.fields import (
     ArrayField,
     HStoreField,
-    JSONField,
 )
 from django.core.exceptions import ValidationError
 from django.template import (
@@ -135,7 +134,7 @@ class ManualRestaurant(Restaurant):
 
 
 class PluginRestaurant(Restaurant):
-    configuration = JSONField()
+    configuration = models.JSONField()
     behaviour = models.CharField(
         max_length=256,
         choices=[
