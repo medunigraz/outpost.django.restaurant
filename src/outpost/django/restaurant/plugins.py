@@ -3,6 +3,7 @@ import hashlib
 import logging
 from datetime import timedelta
 from decimal import Decimal
+from html import unescape
 from typing import List
 
 import bleach
@@ -28,7 +29,6 @@ class RestaurantBehaviourPlugin(Plugin):
 
 
 class RestaurantBehaviour(object):
-
     name = f"{__name__}.RestaurantBehaviour"
     base = RestaurantBehaviourPlugin
     hookspec = pluggy.HookspecMarker(name)
@@ -54,7 +54,6 @@ class RestaurantBehaviour(object):
 
 
 class DebugRestaurantBehaviour(RestaurantBehaviourPlugin):
-
     name = _("Debugger")
 
     @RestaurantBehaviour.hookimpl
@@ -68,7 +67,6 @@ class DebugRestaurantBehaviour(RestaurantBehaviourPlugin):
 
 
 class MensenRestaurantBehaviour(RestaurantBehaviourPlugin):
-
     name = _("Mensen")
 
     schema = {
@@ -126,15 +124,19 @@ class MensenRestaurantBehaviour(RestaurantBehaviourPlugin):
                                 f"Could not map diet for {restaurant} to values {names}."
                             )
                             diet = restaurant.default_diet
-                        meal, created = restaurant.meals.get_or_create(
+                        meal, created = restaurant.meals.update_or_create(
                             foreign=foreign,
                             defaults={
                                 "available": day,
-                                "description": bleach.clean(
-                                    " ".join(
-                                        entry.get("title_de").replace("\n", " ").split()
-                                    ),
-                                    strip=True,
+                                "description": unescape(
+                                    bleach.clean(
+                                        " ".join(
+                                            entry.get("title_de")
+                                            .replace("\n", " ")
+                                            .split()
+                                        ),
+                                        strip=True,
+                                    )
                                 ),
                                 "price": Decimal(entry.get("price")),
                                 "diet": diet,
