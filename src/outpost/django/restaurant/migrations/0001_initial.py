@@ -32,7 +32,6 @@ class Migration(migrations.Migration):
                 ("name", models.CharField(max_length=128)),
                 ("dateformat", models.CharField(max_length=64)),
             ],
-            options={"manager_inheritance_from_future": True},
         ),
         migrations.CreateModel(
             name="Diet",
@@ -119,7 +118,6 @@ class Migration(migrations.Migration):
                 ),
                 ("enabled", models.BooleanField(default=False)),
             ],
-            options={"manager_inheritance_from_future": True},
         ),
         migrations.CreateModel(
             name="XMLRestaurant",
@@ -137,7 +135,6 @@ class Migration(migrations.Migration):
                 ),
                 ("source_template", models.TextField()),
             ],
-            options={"manager_inheritance_from_future": True},
             bases=("restaurant.restaurant",),
         ),
         migrations.CreateModel(
@@ -156,7 +153,6 @@ class Migration(migrations.Migration):
                 ),
                 ("xslt", models.TextField()),
             ],
-            options={"manager_inheritance_from_future": True},
             bases=("restaurant.baseextractor",),
         ),
         migrations.AddField(
