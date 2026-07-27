@@ -3,7 +3,7 @@ from datetime import (
     timedelta,
 )
 
-from lxml import etree
+from lxml import etree  # nosec B410
 
 
 class RestaurantExtension:

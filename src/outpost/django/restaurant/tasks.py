@@ -19,7 +19,8 @@ from django.template import (
     Template,
 )
 from django.utils import timezone
-from lxml import etree
+from defusedxml.ElementTree import XML
+from lxml.etree import XSLT  # nosec B410
 from requests.exceptions import RequestException
 
 from . import models
@@ -53,7 +54,9 @@ class SynchronizationTasks:
         today = timezone.localdate()
         try:
             req = requests.get(
-                settings.RESTAURANT_API_URL, headers={"Accept": "application/json"}
+                settings.RESTAURANT_API_URL,
+                headers={"Accept": "application/json"},
+                timeout=10,
             )
             req.raise_for_status()
         except RequestException as e:
@@ -133,24 +136,24 @@ class SynchronizationTasks:
         for xrest in models.XMLRestaurant.objects.filter(enabled=True):
             logger.debug(f"Processing {xrest}")
             try:
-                with requests.get(xrest.source, headers=xrest.headers) as resp:
+                with requests.get(
+                    xrest.source, headers=xrest.headers, timeout=10
+                ) as resp:
                     resp.raise_for_status()
                 if xrest.normalize:
                     bs = bs4.BeautifulSoup(resp.text, "lxml")
                     for selector in xrest.decompose:
                         for element in bs.select(selector):
                             element.decompose()
-                    doc = etree.XML(bs.prettify())
+                    doc = XML(bs.prettify())
                 else:
-                    doc = etree.XML(resp.text)
+                    doc = XML(resp.text)
             except RequestException as e:
                 logger.warn(f"Could not fetch restaurant data: {e}")
                 continue
             context = Context({"restaurant": xrest})
             xslt = Template(xrest.extractor.xslt).render(context)
-            transformer = etree.XSLT(
-                etree.XML(xslt.encode("utf-8")), extensions=extensions
-            )
+            transformer = XSLT(XML(xslt.encode("utf-8")), extensions=extensions)
             data = transformer(doc)
             for meal in json.loads(unicodedata.normalize("NFKD", str(data))):
                 values = defaultdict(lambda: None)

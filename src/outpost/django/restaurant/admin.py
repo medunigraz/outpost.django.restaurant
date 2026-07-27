@@ -67,7 +67,7 @@ class ManualRestaurantAdmin(RestaurantChildAdmin):
         qr.save(b)
         tag = b.getvalue().decode("utf-8")
         b.close()
-        return mark_safe(tag)
+        return mark_safe(tag)  # nosec B703 B308
 
     qrcode.short_description = _("QR code")
 
