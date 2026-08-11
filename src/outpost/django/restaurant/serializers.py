@@ -53,11 +53,8 @@ class MealSerializer(FlexFieldsModelSerializer):
     @property
     def expandable_fields(self):
         return {
-            "diet": (f"{self.__class__.__module__}.DietSerializer", {"source": "diet"}),
-            "restaurant": (
-                f"{self.__class__.__module__}.RestaurantSerializer",
-                {"source": "restaurant"},
-            ),
+            "diet": (f"{self.__class__.__module__}.DietSerializer",),
+            "restaurant": (f"{self.__class__.__module__}.RestaurantSerializer",),
         }
 
     class Meta:
@@ -105,11 +102,11 @@ class RestaurantSerializer(FlexFieldsModelSerializer):
         return {
             "meals": (
                 f"{self.__class__.__module__}.MealSerializer",
-                {"source": "meals", "many": True},
+                {"many": True},
             ),
             "specials": (
                 f"{self.__class__.__module__}.SpecialSerializer",
-                {"source": "specials", "many": True},
+                {"many": True},
             ),
         }
 
