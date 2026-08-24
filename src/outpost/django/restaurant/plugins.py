@@ -27,7 +27,6 @@ class RestaurantBehaviourPlugin(Plugin):
 
 
 class RestaurantBehaviour(object):
-
     name = f"{__name__}.RestaurantBehaviour"
     base = RestaurantBehaviourPlugin
     hookspec = pluggy.HookspecMarker(name)
@@ -53,7 +52,6 @@ class RestaurantBehaviour(object):
 
 
 class DebugRestaurantBehaviour(RestaurantBehaviourPlugin):
-
     name = _("Debugger")
 
     @RestaurantBehaviour.hookimpl
@@ -67,7 +65,6 @@ class DebugRestaurantBehaviour(RestaurantBehaviourPlugin):
 
 
 class MensenRestaurantBehaviour(RestaurantBehaviourPlugin):
-
     name = _("Mensen")
 
     schema = {
@@ -99,12 +96,14 @@ class MensenRestaurantBehaviour(RestaurantBehaviourPlugin):
         for nested in restaurant.configuration.get("nested"):
             data = json.loads(jmespath.search(nested, result))
             first_day = parse(data.get("first_day"))
-            for menus in data.get("menus"):
+            for menu_pos, menus in enumerate(data.get("menus")):
                 for offset, values in menus.get("menus").items():
                     day = first_day + timedelta(days=int(offset) - 1)
                     for pos, entry in enumerate(values):
-                        foreign = "{day}-{pos}".format(
-                            day=day.strftime("%Y-%m-%d"), pos=pos
+                        foreign = "{day}-{menu_pos}-{pos}".format(
+                            day=day.strftime("%Y-%m-%d"),
+                            menu_pos=menu_pos,
+                            pos=pos,
                         )
                         informations = entry.get("informations")
                         if informations:
