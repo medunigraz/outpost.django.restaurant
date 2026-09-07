@@ -35,7 +35,7 @@ class SynchronizationTasks:
         bind=True, ignore_result=True, name=f"{__name__}.Synchronization:plugins"
     )
     def plugins(task):
-        for restaurant in models.PluginsRestaurant.objects.filter(enabled=True):
+        for restaurant in models.PluginRestaurant.objects.filter(enabled=True):
             restaurant.plugin.hook.update(restaurant=restaurant)
 
     @shared_task(
