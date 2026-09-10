@@ -57,7 +57,8 @@ class RestaurantMixin:
         return super().get_context_data(**{"restaurant": self.restaurant})
 
     def form_valid(self, form):
-        form.instance.restaurant = self.restaurant
+        if hasattr(form, "instance"):
+            form.instance.restaurant = self.restaurant
         return super().form_valid(form)
 
 
