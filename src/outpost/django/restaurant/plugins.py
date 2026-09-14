@@ -1,3 +1,4 @@
+import html
 import json
 import logging
 from datetime import timedelta
@@ -127,11 +128,15 @@ class MensenRestaurantBehaviour(RestaurantBehaviourPlugin):
                             foreign=foreign,
                             defaults={
                                 "available": day,
-                                "description": bleach.clean(
-                                    " ".join(
-                                        entry.get("title_de").replace("\n", " ").split()
-                                    ),
-                                    strip=True,
+                                "description": html.unescape(
+                                    bleach.clean(
+                                        " ".join(
+                                            entry.get("title_de")
+                                            .replace("\n", " ")
+                                            .split()
+                                        ),
+                                        strip=True,
+                                    )
                                 ),
                                 "price": Decimal(entry.get("price")),
                                 "diet": diet,
