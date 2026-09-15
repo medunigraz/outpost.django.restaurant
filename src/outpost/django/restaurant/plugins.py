@@ -94,6 +94,7 @@ class MensenRestaurantBehaviour(RestaurantBehaviourPlugin):
         result = client.execute(
             query, variable_values=restaurant.configuration.get("variables", {})
         )
+        expected_foreign_keys = set()
         for nested in restaurant.configuration.get("nested"):
             data = json.loads(jmespath.search(nested, result))
             first_day = parse(data.get("first_day"))
@@ -106,6 +107,7 @@ class MensenRestaurantBehaviour(RestaurantBehaviourPlugin):
                             menu_pos=menu_pos,
                             pos=pos,
                         )
+                        expected_foreign_keys.add(foreign)
                         informations = entry.get("informations")
                         if informations:
                             names = entry.get("informations").keys()
@@ -124,7 +126,7 @@ class MensenRestaurantBehaviour(RestaurantBehaviourPlugin):
                                 f"Could not map diet for {restaurant} to values {names}."
                             )
                             diet = restaurant.default_diet
-                        meal, created = restaurant.meals.get_or_create(
+                        meal, created = restaurant.meals.update_or_create(
                             foreign=foreign,
                             defaults={
                                 "available": day,
@@ -146,6 +148,12 @@ class MensenRestaurantBehaviour(RestaurantBehaviourPlugin):
                             logger.debug(f"Created new meal {meal} for {restaurant}")
                         else:
                             logger.debug(f"Updated meal {meal} for {restaurant}")
+
+        deleted_count, _ = restaurant.meals.exclude(
+            foreign__in=expected_foreign_keys
+        ).delete()
+        if deleted_count:
+            logger.debug(f"Deleted {deleted_count} meal(s) for {restaurant}")
 
     @RestaurantBehaviour.hookimpl
     def validate(self, restaurant):
